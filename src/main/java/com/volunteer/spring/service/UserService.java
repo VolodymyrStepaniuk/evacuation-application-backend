@@ -4,13 +4,14 @@ import com.volunteer.spring.exceptions.UserNotFoundException;
 import com.volunteer.spring.interfaces.ServiceInterface;
 import com.volunteer.spring.model.User;
 import com.volunteer.spring.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements ServiceInterface<User> {
-    @Autowired
-    UserRepository repository;
+    private final UserRepository repository;
 
     @Override
     public void save(User user) {

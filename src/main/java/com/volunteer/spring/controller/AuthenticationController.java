@@ -5,7 +5,6 @@ import com.volunteer.spring.auth.AuthenticationResponse;
 import com.volunteer.spring.auth.RegisterRequest;
 import com.volunteer.spring.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

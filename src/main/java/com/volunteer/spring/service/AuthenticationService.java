@@ -3,7 +3,7 @@ package com.volunteer.spring.service;
 import com.volunteer.spring.auth.AuthenticationRequest;
 import com.volunteer.spring.auth.AuthenticationResponse;
 import com.volunteer.spring.auth.RegisterRequest;
-import com.volunteer.spring.model.Role;
+import com.volunteer.spring.model.enums.Role;
 import com.volunteer.spring.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,7 +24,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(Role.VOLUNTEER)
                 .build();
         userService.save(user);
         var jwtToken = jwtService.generateToken(user);

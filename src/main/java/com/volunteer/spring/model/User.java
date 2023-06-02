@@ -1,5 +1,6 @@
 package com.volunteer.spring.model;
 
+import com.volunteer.spring.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
