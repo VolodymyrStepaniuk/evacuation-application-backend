@@ -7,5 +7,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RequestNotFoundException extends EntityNotFoundException {
-    private String description;
+    private String message;
+    public RequestNotFoundException(){
+
+        message = "No request found";
+    }
 }

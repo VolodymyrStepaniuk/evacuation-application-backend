@@ -7,5 +7,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UserNotFoundException extends EntityNotFoundException {
-    private String description;
+    private String message;
+    public UserNotFoundException(){
+        message = "No user found";
+    }
 }
