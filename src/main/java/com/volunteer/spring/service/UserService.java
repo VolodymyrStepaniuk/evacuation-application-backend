@@ -5,7 +5,6 @@ import com.volunteer.spring.interfaces.ServiceInterface;
 import com.volunteer.spring.model.User;
 import com.volunteer.spring.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,5 +39,8 @@ public class UserService implements ServiceInterface<User> {
 
     public User findByUsername(String username){
         return repository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+    }
+    public boolean isUserAlreadyExist(String username){
+        return repository.findByUsername(username).isPresent();
     }
 }

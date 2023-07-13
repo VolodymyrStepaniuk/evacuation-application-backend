@@ -1,23 +1,21 @@
 package com.volunteer.spring.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.volunteer.spring.auth.AuthenticationRequest;
 import com.volunteer.spring.auth.AuthenticationResponse;
 import com.volunteer.spring.auth.RegisterRequest;
+import com.volunteer.spring.exceptions.InvalidTokenException;
+import com.volunteer.spring.exceptions.UserAlreadyExistsException;
 import com.volunteer.spring.model.Token;
-import com.volunteer.spring.model.enums.Role;
 import com.volunteer.spring.model.User;
+import com.volunteer.spring.model.enums.Role;
 import com.volunteer.spring.model.enums.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,17 +26,20 @@ public class AuthenticationService {
     private final AuthenticationManager authManager;
     private final TokenService tokenService;
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
+        if(userService.isUserAlreadyExist(request.getUsername())){
+            throw new UserAlreadyExistsException();
+        }
+        var newUser = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.VOLUNTEER)
                 .build();
-        userService.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(user,jwtToken);
+        userService.save(newUser);
+        var jwtToken = jwtService.generateToken(newUser);
+        var refreshToken = jwtService.generateRefreshToken(newUser);
+        saveUserToken(newUser,jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
@@ -85,30 +86,29 @@ public class AuthenticationService {
         tokenService.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+    public AuthenticationResponse refreshToken(
+            HttpServletRequest request
+    ){
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            throw  new InvalidTokenException();
+        }
         final String refreshToken;
         final String username;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
-        }
+        String accessToken = null;
         refreshToken = authHeader.substring(7);
         username = jwtService.extractUsername(refreshToken);
         if (username != null) {
             var user = this.userService.findByUsername(username);
             if (jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
+                accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
-                        .accessToken(accessToken)
-                        .refreshToken(refreshToken)
-                        .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

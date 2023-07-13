@@ -1,15 +1,18 @@
 package com.volunteer.spring.exceptions;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class RequestNotFoundException extends EntityNotFoundException {
-    private String message;
+public class RequestNotFoundException extends RuntimeException {
     public RequestNotFoundException(){
-
-        message = "No request found";
+       super("No request found");
+    }
+    public RequestNotFoundException(String message){
+        super(message);
+    }
+    public RequestNotFoundException(Throwable throwable){
+        super(throwable);
     }
 }

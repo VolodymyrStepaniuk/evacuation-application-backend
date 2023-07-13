@@ -1,7 +1,5 @@
 package com.volunteer.spring.config;
 
-import com.volunteer.spring.model.User;
-import com.volunteer.spring.repository.TokenRepository;
 import com.volunteer.spring.service.JwtService;
 import com.volunteer.spring.service.TokenService;
 import jakarta.servlet.FilterChain;

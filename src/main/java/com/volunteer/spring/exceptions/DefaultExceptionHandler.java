@@ -33,4 +33,26 @@ public class DefaultExceptionHandler {
 
         return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<ApiError> handleException(TokenNotFoundException e, HttpServletRequest request){
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleException(UserAlreadyExistsException e, HttpServletRequest request){
+        ApiError apiError = new ApiError(
+                request.getRequestURI(),
+                e.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(apiError,HttpStatus.CONFLICT);
+    }
 }
